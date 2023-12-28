@@ -13,7 +13,7 @@
         <div class="posts-container">
             <div class="post" th:each="post : ${posts}">
                 <h2><a th:href="@{'/posts/' + ${post.id}}"
-                       th:href="${post.title}">Title</a>
+                       th:text="${post.title}">Title</a>
                 </h2>
                 <h5 th:text="'Published on ' + ${post.createdAt}">Created At</h5>
                 <p th:text="${post.body}">body text</p>
