@@ -15,6 +15,7 @@ public class HomeController {
     @Autowired
     private PostService postService;
 
+//    handler method
     @GetMapping("/")
     public String home(Model model){
         List<Post> posts = postService.getAll();
