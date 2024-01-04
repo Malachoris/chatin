@@ -67,7 +67,7 @@ public class HomeController {
                 .email(signUpDto.getEmail())
                 .password(passwordEncoder.encode(signUpDto.getPassword()))
                 .build();
-        Authority authority = authorityRepository.findByName("ROLE_ADMIN").get();
+        Authority authority = authorityRepository.findByName("ROLE_USER").get();
         blogger.setAuthorities(Collections.singleton(authority));
         bloggerRepository.save(blogger);
         return new ResponseEntity<>("User is registered successfully!", HttpStatus.OK);

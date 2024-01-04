@@ -42,6 +42,7 @@ public class WebSecurityConfig {
                     auth.requestMatchers(antMatcher("/api/posts/**")).permitAll();
                     auth.requestMatchers(antMatcher("/api/posts/{id}/edit/**")).authenticated();
                     auth.requestMatchers(antMatcher("/api/posts/{id}/**")).authenticated();
+                    auth.requestMatchers(antMatcher("/api/admin/**")).authenticated();
                     auth.requestMatchers(PathRequest.toH2Console()).permitAll();
                     auth.anyRequest().authenticated();
                 })
