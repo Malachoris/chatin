@@ -2,38 +2,37 @@ package com.chatin.microbloggingappspringboot.services;
 
 import com.chatin.microbloggingappspringboot.models.Post;
 import com.chatin.microbloggingappspringboot.repositories.PostRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-// Stereotype design pattern
 @Service
+@RequiredArgsConstructor
 public class PostService {
-    @Autowired
-    private PostRepository postRepository;
 
-//    Optional because we might get nothing null so to avoid errors
-//    could be public Post getById
-    public Optional<Post> getById(Long id){
-//        getById is deprecated in crudRepository :can be deleted:
+    private final PostRepository postRepository;
+
+    public Optional<Post> getById(Long id) {
         return postRepository.findById(id);
     }
 
-//
-    public List<Post> getAll(){
+    public List<Post> getAll() {
         return postRepository.findAll();
     }
 
-//
-    public Post save(Post post){
-//        Save time the moment new post was created
-        if (post.getId()==null) {
+    public Post save(Post post) {
+        if (post.getId() == null) {
             post.setCreatedAt(LocalDateTime.now());
         }
+        post.setUpdatedAt(LocalDateTime.now());
         return postRepository.save(post);
+    }
+
+    public void delete(Post post) {
+        postRepository.delete(post);
     }
 
 }

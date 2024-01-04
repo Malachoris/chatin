@@ -9,5 +9,4 @@ public class MicrobloggingAppSpringBootApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(MicrobloggingAppSpringBootApplication.class, args);
 	}
-
 }

@@ -1,15 +1,19 @@
 package com.chatin.microbloggingappspringboot.models;
 
-import java.time.LocalDateTime;
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
 
-// Post will persist in database as entity
+import jakarta.persistence.*;
+
+import java.time.LocalDateTime;
+
 @Entity
-// Write getters and setters for all nonstatic fields during compile
 @Getter
 @Setter
+@NoArgsConstructor
+@ToString
+@Builder
+@AllArgsConstructor
 public class Post {
 
     @Id
@@ -22,5 +26,12 @@ public class Post {
     private String body;
 
     private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
+
+    @NotNull
+    @ManyToOne
+    @JoinColumn(name = "account_id", referencedColumnName = "id", nullable = false)
+    Blogger blogger;
 
 }
