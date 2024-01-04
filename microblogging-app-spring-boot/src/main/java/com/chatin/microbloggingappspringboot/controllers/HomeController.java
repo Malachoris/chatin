@@ -7,7 +7,6 @@ import com.chatin.microbloggingappspringboot.models.Blogger;
 import com.chatin.microbloggingappspringboot.models.Post;
 import com.chatin.microbloggingappspringboot.repositories.AuthorityRepository;
 import com.chatin.microbloggingappspringboot.repositories.BloggerRepository;
-import com.chatin.microbloggingappspringboot.services.BloggerService;
 import com.chatin.microbloggingappspringboot.services.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,37 +36,34 @@ public class HomeController {
     private AuthorityRepository authorityRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
-
     @Autowired
     private PostService postService;
 
-
     @PostMapping("/login")
-    public ResponseEntity<String> authenticateUser(@RequestBody LoginDto loginDto) {
-        Authentication authentication = authenticationManager
-                .authenticate(new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword()));
+    public ResponseEntity<String> authenticateUser(@RequestBody LoginDto loginDto){
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                loginDto.getUsernameOrEmail(), loginDto.getPassword()));
+
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        return new ResponseEntity<>("User login successfully!...", HttpStatus.OK);
+        return new ResponseEntity<>("User logged in successfully!.", HttpStatus.OK);
     }
 
-
-    @PostMapping("/signup")
+    @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody SignUpDto signUpDto){
 
-        Optional<Blogger> existingUser =bloggerRepository.findOneByEmailIgnoreCase(signUpDto.getEmail());
+        Optional<Blogger> existingUser =bloggerRepository.findByUsernameOrEmail(signUpDto.getUsername(),signUpDto.getEmail());
         if (existingUser.isPresent()) {
             if (existingUser.get().getEmail().equals(signUpDto.getEmail())) {
-                return new ResponseEntity<>("Username is already exist!", HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>("Email already exists!", HttpStatus.BAD_REQUEST);
             } else {
-                return new ResponseEntity<>("Email is already exist!", HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>("Username already exist!", HttpStatus.BAD_REQUEST);
             }
         }
-
         // creating user object
         Blogger blogger = Blogger
                 .builder()
                 .firstName(signUpDto.getFirstName())
-                .lastName(signUpDto.getLastName())
+                .username(signUpDto.getUsername())
                 .email(signUpDto.getEmail())
                 .password(passwordEncoder.encode(signUpDto.getPassword()))
                 .build();

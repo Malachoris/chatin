@@ -59,7 +59,8 @@ public class PostController {
             authUsername = principal.getName();
         }
 
-        Blogger blogger = bloggerService.findOneByEmail(authUsername).orElseThrow(() -> new IllegalArgumentException("Account not found"));
+        Blogger blogger = bloggerService.findOneByEmail(authUsername).orElseThrow(() ->
+                new IllegalArgumentException("Account not found"));
 
         post.setBlogger(blogger);
         postService.save(post);

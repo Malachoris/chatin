@@ -26,7 +26,6 @@ public class SeedData implements CommandLineRunner {
     @Autowired
     private AuthorityRepository authorityRepository;
 
-
     @Override
     public void run(String... args) throws Exception {
 
@@ -42,15 +41,13 @@ public class SeedData implements CommandLineRunner {
             admin.setName("ROLE_ADMIN");
             authorityRepository.save(admin);
 
-
             Blogger account1 = Blogger
                     .builder()
                     .firstName("user_first")
-                    .lastName("user_last")
+                    .username("user_last")
                     .email("user.user@domain.com")
                     .password("password")
                     .build();
-
 
             Set<Authority> authorities1 = new HashSet<>();
             authorityRepository.findById("ROLE_USER").ifPresent(authorities1::add);
@@ -59,7 +56,7 @@ public class SeedData implements CommandLineRunner {
             Blogger account2 = Blogger
                     .builder()
                     .firstName("admin_first")
-                    .lastName("admin_last")
+                    .username("admin_last")
                     .email("admin.admin@domain.com")
                     .password("password")
                     .build();
@@ -68,7 +65,6 @@ public class SeedData implements CommandLineRunner {
             authorityRepository.findById("ROLE_ADMIN").ifPresent(authorities2::add);
             //authorityRepository.findById("ROLE_USER").ifPresent(authorities2::add);
             account2.setAuthorities(authorities2);
-
 
             bloggerService.save(account1);
             bloggerService.save(account2);
@@ -91,5 +87,4 @@ public class SeedData implements CommandLineRunner {
             postService.save(post2);
         }
     }
-
 }
