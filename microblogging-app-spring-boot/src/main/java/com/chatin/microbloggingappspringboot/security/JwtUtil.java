@@ -15,8 +15,9 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class JwtUtil {
 
-//    private static final String secret_key = "mysecretkey";
     private static final Key secret_key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+
+//    Token expires in 1 hour.
     private static long accessTokenValidity = 60*60*1000;
 
     private final JwtParser jwtParser;
@@ -25,19 +26,21 @@ public class JwtUtil {
     private final String TOKEN_PREFIX = "Bearer ";
 
     public JwtUtil(){
-        this.jwtParser = Jwts.parser().setSigningKey(secret_key);
+        this.jwtParser = Jwts.parserBuilder().setSigningKey(secret_key).build();
     }
 
     public static String createToken(Blogger blogger) {
         Claims claims = Jwts.claims().setSubject(blogger.getEmail());
         claims.put("firstName",blogger.getFirstName());
         claims.put("username",blogger.getUsername());
+        claims.put("roles", blogger.getAuthorities());
         Date tokenCreateTime = new Date();
         Date tokenValidity = new Date(tokenCreateTime.getTime() + TimeUnit.MINUTES.toMillis(accessTokenValidity));
         return Jwts.builder()
                 .setClaims(claims)
+
                 .setExpiration(tokenValidity)
-                .signWith(SignatureAlgorithm.HS256, secret_key)
+                .signWith(secret_key)
                 .compact();
     }
 

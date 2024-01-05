@@ -71,6 +71,20 @@ public class AdminController {
         return new ResponseEntity<>("User created successfully!", HttpStatus.OK);
     }
 
+    @DeleteMapping("/deleteUser/{username}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<?> deleteUser(@PathVariable Blogger blogger) {
+
+        Optional<Blogger> userToDelete =bloggerRepository.findByUsernameOrEmail(blogger.getUsername(),blogger.getEmail());
+        if (userToDelete.isEmpty()) {
+            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        }
+
+        bloggerRepository.delete(userToDelete.get());
+
+        return new ResponseEntity<>("User deleted successfully!", HttpStatus.OK);
+    }
+
     private boolean isValidRole(String role) {
         return role.equals("ROLE_USER") || role.equals("ROLE_ADMIN");
     }

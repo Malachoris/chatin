@@ -1,6 +1,5 @@
 package com.chatin.microbloggingappspringboot.controllers;
 
-import com.chatin.microbloggingappspringboot.dto.ErrorResDto;
 import com.chatin.microbloggingappspringboot.dto.LoginReqDto;
 import com.chatin.microbloggingappspringboot.dto.LoginRespDto;
 import com.chatin.microbloggingappspringboot.dto.SignUpDto;
@@ -22,6 +21,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -51,7 +51,6 @@ public class HomeController {
 
     @PostMapping("/login")
     public ResponseEntity<String> authenticateUser(@RequestBody LoginReqDto loginReqDto) {
-        LoginRespDto loginRes;
         try {
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                     loginReqDto.getUsernameOrEmail(), loginReqDto.getPassword()));
@@ -59,14 +58,14 @@ public class HomeController {
             String email = authentication.getName();
             Blogger blogger = new Blogger(email, "");
             String token = JwtUtil.createToken(blogger);
-            loginRes = new LoginRespDto(email, token);
+            LoginRespDto loginRes = new LoginRespDto(email, token);
 
+            return new ResponseEntity<>(("User logged in successfully!." + loginRes), HttpStatus.OK);
         } catch (BadCredentialsException e) {
             return new ResponseEntity<>("Invalid username or password", HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(("User logged in successfully!." + loginRes), HttpStatus.OK);
     }
 
     @PostMapping("/register")
@@ -86,6 +85,8 @@ public class HomeController {
                 .firstName(signUpDto.getFirstName())
                 .username(signUpDto.getUsername())
                 .email(signUpDto.getEmail())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .password(passwordEncoder.encode(signUpDto.getPassword()))
                 .build();
         Authority authority = authorityRepository.findByName("ROLE_USER").get();
