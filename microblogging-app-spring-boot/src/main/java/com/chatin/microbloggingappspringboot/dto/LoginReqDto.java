@@ -3,7 +3,7 @@ package com.chatin.microbloggingappspringboot.dto;
 import lombok.Data;
 
 @Data
-public class LoginDto {
+public class LoginReqDto {
     private String usernameOrEmail;
     private String password;
 }

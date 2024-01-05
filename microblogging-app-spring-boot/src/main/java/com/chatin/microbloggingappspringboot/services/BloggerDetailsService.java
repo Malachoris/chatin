@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @Component("userDetailsService")
 @RequiredArgsConstructor
 @Service
-public class MyBloggerDetailsService implements UserDetailsService {
+public class BloggerDetailsService implements UserDetailsService {
 
     private final BloggerRepository bloggerRepository;
 

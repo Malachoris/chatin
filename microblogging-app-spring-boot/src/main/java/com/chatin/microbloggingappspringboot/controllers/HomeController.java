@@ -1,21 +1,24 @@
 package com.chatin.microbloggingappspringboot.controllers;
 
-import com.chatin.microbloggingappspringboot.dto.LoginDto;
+import com.chatin.microbloggingappspringboot.dto.ErrorResDto;
+import com.chatin.microbloggingappspringboot.dto.LoginReqDto;
+import com.chatin.microbloggingappspringboot.dto.LoginRespDto;
 import com.chatin.microbloggingappspringboot.dto.SignUpDto;
 import com.chatin.microbloggingappspringboot.models.Authority;
 import com.chatin.microbloggingappspringboot.models.Blogger;
 import com.chatin.microbloggingappspringboot.models.Post;
 import com.chatin.microbloggingappspringboot.repositories.AuthorityRepository;
 import com.chatin.microbloggingappspringboot.repositories.BloggerRepository;
+import com.chatin.microbloggingappspringboot.security.JwtUtil;
 import com.chatin.microbloggingappspringboot.services.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,13 +42,31 @@ public class HomeController {
     @Autowired
     private PostService postService;
 
-    @PostMapping("/login")
-    public ResponseEntity<String> authenticateUser(@RequestBody LoginDto loginDto){
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                loginDto.getUsernameOrEmail(), loginDto.getPassword()));
+    private JwtUtil jwtUtil;
+    public HomeController(AuthenticationManager authenticationManager, JwtUtil jwtUtil) {
+        this.authenticationManager = authenticationManager;
+        this.jwtUtil = jwtUtil;
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        return new ResponseEntity<>("User logged in successfully!.", HttpStatus.OK);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> authenticateUser(@RequestBody LoginReqDto loginReqDto) {
+        LoginRespDto loginRes;
+        try {
+            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                    loginReqDto.getUsernameOrEmail(), loginReqDto.getPassword()));
+
+            String email = authentication.getName();
+            Blogger blogger = new Blogger(email, "");
+            String token = JwtUtil.createToken(blogger);
+            loginRes = new LoginRespDto(email, token);
+
+        } catch (BadCredentialsException e) {
+            return new ResponseEntity<>("Invalid username or password", HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(("User logged in successfully!." + loginRes), HttpStatus.OK);
     }
 
     @PostMapping("/register")

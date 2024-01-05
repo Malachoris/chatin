@@ -1,5 +1,8 @@
-package com.chatin.microbloggingappspringboot.config;
+package com.chatin.microbloggingappspringboot.security;
 
+import com.chatin.microbloggingappspringboot.repositories.BloggerRepository;
+//import com.chatin.microbloggingappspringboot.security.JwtTokenFilter;
+import com.chatin.microbloggingappspringboot.services.BloggerDetailsService;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +22,12 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true)
 public class WebSecurityConfig {
+
+//    private final BloggerDetailsService bloggerDetailsService;
+//
+//    public WebSecurityConfig(BloggerDetailsService bloggerDetailsService) {
+//        this.bloggerDetailsService = bloggerDetailsService;
+//    }
 
     @Bean
     public static PasswordEncoder passwordEncoder() {

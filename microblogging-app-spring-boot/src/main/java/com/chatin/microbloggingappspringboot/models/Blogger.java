@@ -37,6 +37,11 @@ public class Blogger {
 
     private LocalDateTime updatedAt;
 
+    public Blogger(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
+
     @JsonIgnore
     @OneToMany(mappedBy = "blogger")
     List<Post> posts;
@@ -49,3 +54,5 @@ public class Blogger {
     Set<Authority> authorities;
 
 }
+
+
