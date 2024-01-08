@@ -14,6 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -24,6 +25,11 @@ public class PostController {
 
     private final PostService postService;
     private final BloggerService bloggerService;
+
+    @GetMapping
+    public List<Post> home() {
+        return postService.getAll();
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<Post> getPost(@PathVariable Long id) {

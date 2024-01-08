@@ -44,8 +44,6 @@ public class WebSecurityConfig {
         return configuration.getAuthenticationManager();
     }
 
-
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         // Note: spring security requestMatchers updated again

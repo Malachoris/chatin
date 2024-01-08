@@ -24,7 +24,6 @@ import java.util.Optional;
 @Slf4j
 public class AdminController {
 
-    @Autowired
     private final BloggerService bloggerService;
     @Autowired
     private final BloggerRepository bloggerRepository;
@@ -49,7 +48,7 @@ public class AdminController {
                 return new ResponseEntity<>("Username already exist!", HttpStatus.BAD_REQUEST);
             }
         }
-
+//    public ResponseEntity<?> assignRole(){}
         // Create user object
         Blogger blogger = Blogger
                 .builder()
@@ -66,7 +65,7 @@ public class AdminController {
         }
         blogger.setAuthorities(Collections.singleton(authority));
 
-        bloggerService.save(blogger);
+        bloggerService.save(signUpDto);
 
         return new ResponseEntity<>("User created successfully!", HttpStatus.OK);
     }
@@ -84,6 +83,11 @@ public class AdminController {
 
         return new ResponseEntity<>("User deleted successfully!", HttpStatus.OK);
     }
+
+//    public ResponseEntity<?> deleteAnyPost(){}
+//    public ResponseEntity<?> updateBlogger(){}
+
+
 
     private boolean isValidRole(String role) {
         return role.equals("ROLE_USER") || role.equals("ROLE_ADMIN");
