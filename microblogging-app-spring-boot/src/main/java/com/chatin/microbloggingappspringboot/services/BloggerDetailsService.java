@@ -1,8 +1,8 @@
 package com.chatin.microbloggingappspringboot.services;
 
 import com.chatin.microbloggingappspringboot.models.Blogger;
+import com.chatin.microbloggingappspringboot.repositories.BloggerRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,12 +18,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 public class BloggerDetailsService implements UserDetailsService {
-
-    private final BloggerService bloggerService;
+    private final BloggerRepository bloggerRepository;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Blogger blogger = bloggerService.findOneByEmail(email)
+        Blogger blogger = bloggerRepository.findOneByEmailIgnoreCase(email)
                 .orElseThrow(() ->
                         new UsernameNotFoundException("User not found with email: "+ email));
 
@@ -38,10 +37,4 @@ public class BloggerDetailsService implements UserDetailsService {
                 blogger.getPassword(),
                 authorities);
     }
-        public boolean isAdmin (Authentication authentication){
-            String authUsername = authentication.getName();
-            return this.loadUserByUsername(authUsername).getAuthorities().stream()
-                    .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
-    }
-
 }

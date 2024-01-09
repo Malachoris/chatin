@@ -42,7 +42,6 @@ public class SeedData implements CommandLineRunner {
             admin.setName("ROLE_ADMIN");
             authorityRepository.save(admin);
 
-
             Blogger account1 = Blogger
                     .builder()
                     .firstName("user_first")
@@ -50,7 +49,6 @@ public class SeedData implements CommandLineRunner {
                     .email("user.user@domain.com")
                     .password("password")
                     .build();
-
 
             SignUpDto signUpDto = new SignUpDto();
             signUpDto.setFirstName("user_first");
@@ -68,11 +66,9 @@ public class SeedData implements CommandLineRunner {
 //            authorityRepository.findById("ROLE_USER").ifPresent(authorities1::add);
 //            account1.setAuthorities(authorities1);
 
-
             Set<Authority> authorities2 = new HashSet<>();
             authorityRepository.findById("ROLE_ADMIN").ifPresent(authorities2::add);
             authorityRepository.findById("ROLE_USER").ifPresent(authorities2::add);
-
 
             Blogger account2 = Blogger
                     .builder()
@@ -82,8 +78,6 @@ public class SeedData implements CommandLineRunner {
                     .password("password")
                     .authorities(authorities2)
                     .build();
-
-
 
             account2.setAuthorities(authorities2);
 
@@ -103,7 +97,6 @@ public class SeedData implements CommandLineRunner {
 
 //            bloggerService.saveUpdate(signUpDto);
 //            bloggerService.saveUpdate(signUpDto1);
-
 
             Post post1 = Post
                     .builder()
