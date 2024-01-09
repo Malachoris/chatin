@@ -1,16 +1,14 @@
 package com.chatin.microbloggingappspringboot.controllers;
 
+import com.chatin.microbloggingappspringboot.dto.SignUpDto;
 import com.chatin.microbloggingappspringboot.models.Blogger;
-import com.chatin.microbloggingappspringboot.repositories.AuthorityRepository;
 import com.chatin.microbloggingappspringboot.repositories.BloggerRepository;
 import com.chatin.microbloggingappspringboot.services.BloggerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -22,29 +20,39 @@ import java.util.Optional;
 public class AdminController {
 
     private final BloggerService bloggerService;
-    @Autowired
     private final BloggerRepository bloggerRepository;
-    @Autowired
-    private final AuthorityRepository authorityRepository;
-    @Autowired
-    private final PasswordEncoder passwordEncoder;
 
+    @PostMapping("/addUpdateBlogger")
+    public ResponseEntity<String> createUpdateBlogger(@RequestBody SignUpDto signUpDto) {
+        try {
+            Optional<Blogger> existingBlogger = bloggerService.findOneByEmail(signUpDto.getEmail());
+            if (existingBlogger.isPresent()) {
+                bloggerService.saveUpdate(existingBlogger.get(), signUpDto);
+                return new ResponseEntity<>("Blogger updated successfully!", HttpStatus.OK);
+            }
 
-    @DeleteMapping("/deleteUser/{username}")
-    public ResponseEntity<?> deleteUser(@PathVariable Blogger blogger) {
+            Blogger blogger = new Blogger();
+            bloggerService.saveUpdate(blogger, signUpDto);
+            return new ResponseEntity<>("Blogger registered successfully!", HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("An error occurred during Blogger creation/update.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
-        Optional<Blogger> userToDelete =bloggerService.findOneByEmail(blogger.getEmail());
-        if (userToDelete.isEmpty()) {
-            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+    @DeleteMapping("/deleteBlogger/{id}")
+    public ResponseEntity<?> deleteBlogger(@PathVariable Long id, Authentication authentication) {
+        boolean isAdmin = bloggerService.isAdmin(authentication);
+        if (isAdmin){
+            Optional<Blogger> BloggerToDelete = bloggerService.getById(id);
+            if (BloggerToDelete.isEmpty()) {
+                return new ResponseEntity<>("Blogger not found", HttpStatus.NOT_FOUND);
+            }
+
+            bloggerRepository.delete(BloggerToDelete.get());
         }
 
-        bloggerRepository.delete(userToDelete.get());
-
-        return new ResponseEntity<>("User deleted successfully!", HttpStatus.OK);
+        return new ResponseEntity<>("Blogger deleted successfully!", HttpStatus.OK);
     }
 
-    private boolean isValidRole(String role) {
-        return role.equals("ROLE_USER") || role.equals("ROLE_ADMIN");
-    }
 }
 

@@ -7,6 +7,7 @@ import com.chatin.microbloggingappspringboot.repositories.AuthorityRepository;
 import com.chatin.microbloggingappspringboot.repositories.BloggerRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,8 @@ public class BloggerService {
     private final PasswordEncoder passwordEncoder;
     private final BloggerRepository bloggerRepository;
     private final AuthorityRepository authorityRepository;
+
+    private final BloggerDetailsService bloggerDetailsService;
 
     public Blogger saveSeed(Blogger blogger) {
 
@@ -141,6 +144,12 @@ public class BloggerService {
                 throw new IllegalArgumentException("Role not found: " + roleName);
             }
         }
+
+    public boolean isAdmin (Authentication authentication){
+        String authUsername = authentication.getName();
+        return bloggerDetailsService.loadUserByUsername(authUsername).getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+    }
 
     public Optional<Blogger> findOneByEmail(String email) {
         return bloggerRepository.findOneByEmailIgnoreCase(email);
