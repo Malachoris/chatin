@@ -34,11 +34,11 @@ public class JwtUtil {
         claims.put("firstName",blogger.getFirstName());
         claims.put("username",blogger.getUsername());
         claims.put("roles", blogger.getAuthorities());
+
         Date tokenCreateTime = new Date();
         Date tokenValidity = new Date(tokenCreateTime.getTime() + TimeUnit.MINUTES.toMillis(accessTokenValidity));
         return Jwts.builder()
                 .setClaims(claims)
-
                 .setExpiration(tokenValidity)
                 .signWith(secret_key)
                 .compact();

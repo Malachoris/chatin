@@ -1,6 +1,5 @@
 package com.chatin.microbloggingappspringboot.security;
 
-//import com.chatin.microbloggingappspringboot.security.JwtTokenFilter;
 import com.chatin.microbloggingappspringboot.services.BloggerDetailsService;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -21,7 +20,8 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(securedEnabled = true)
+@EnableMethodSecurity(securedEnabled = true,
+        jsr250Enabled = true)
 public class WebSecurityConfig {
 
     private final BloggerDetailsService bloggerDetailsService;
@@ -44,13 +44,9 @@ public class WebSecurityConfig {
         return configuration.getAuthenticationManager();
     }
 
-
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        // Note: spring security requestMatchers updated again
-        // https://stackoverflow.com/questions/76809698/spring-security-method-cannot-decide-pattern-is-mvc-or-not-spring-boot-applicati
-//        H2 somehow is visible only with this.
+        //  H2 somehow is visible only with this.
         http.headers().frameOptions().disable();
         http
                 .csrf(AbstractHttpConfigurer::disable)
@@ -65,7 +61,6 @@ public class WebSecurityConfig {
                         throw new RuntimeException(e);
                     }
                 })
-
                 .formLogin(form -> form
                         .loginPage("/api/login")
                         .loginProcessingUrl("/api")
@@ -75,8 +70,6 @@ public class WebSecurityConfig {
                         .failureUrl("/login?error")
                         .permitAll()
                 );
-
         return http.build();
     }
-
 }

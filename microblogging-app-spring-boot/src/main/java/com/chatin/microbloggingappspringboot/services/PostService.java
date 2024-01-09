@@ -30,9 +30,7 @@ public class PostService {
         post.setUpdatedAt(LocalDateTime.now());
         return postRepository.save(post);
     }
-
     public void delete(Post post) {
         postRepository.delete(post);
     }
-
 }

@@ -13,7 +13,7 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString
+@Data
 @Builder
 @AllArgsConstructor
 public class Blogger {
