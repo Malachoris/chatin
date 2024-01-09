@@ -64,14 +64,14 @@ public class SeedData implements CommandLineRunner {
             signUpDto1.setEmail("admin.admin@domain.com");
             signUpDto1.setPassword("password");
 
-            Set<Authority> authorities1 = new HashSet<>();
-            authorityRepository.findById("ROLE_USER").ifPresent(authorities1::add);
-            account1.setAuthorities(authorities1);
+//            Set<Authority> authorities1 = new HashSet<>();
+//            authorityRepository.findById("ROLE_USER").ifPresent(authorities1::add);
+//            account1.setAuthorities(authorities1);
 
 
             Set<Authority> authorities2 = new HashSet<>();
             authorityRepository.findById("ROLE_ADMIN").ifPresent(authorities2::add);
-            //authorityRepository.findById("ROLE_USER").ifPresent(authorities2::add);
+            authorityRepository.findById("ROLE_USER").ifPresent(authorities2::add);
 
 
             Blogger account2 = Blogger

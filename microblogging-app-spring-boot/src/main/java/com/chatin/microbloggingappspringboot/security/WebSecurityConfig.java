@@ -46,8 +46,6 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        // Note: spring security requestMatchers updated again
-        // https://stackoverflow.com/questions/76809698/spring-security-method-cannot-decide-pattern-is-mvc-or-not-spring-boot-applicati
         //  H2 somehow is visible only with this.
         http.headers().frameOptions().disable();
         http
@@ -63,7 +61,6 @@ public class WebSecurityConfig {
                         throw new RuntimeException(e);
                     }
                 })
-
                 .formLogin(form -> form
                         .loginPage("/api/login")
                         .loginProcessingUrl("/api")
@@ -73,8 +70,6 @@ public class WebSecurityConfig {
                         .failureUrl("/login?error")
                         .permitAll()
                 );
-
         return http.build();
     }
-
 }

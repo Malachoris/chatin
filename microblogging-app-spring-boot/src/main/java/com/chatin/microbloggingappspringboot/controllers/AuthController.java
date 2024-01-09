@@ -57,7 +57,6 @@ public class AuthController {
     }
 
     @PostMapping("/updateBlogger")
-    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> updateBlogger(@RequestBody SignUpDto signUpDto, Authentication authentication) {
 
         String authUsername = authentication.getName();

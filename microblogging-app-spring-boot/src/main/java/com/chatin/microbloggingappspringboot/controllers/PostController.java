@@ -2,13 +2,13 @@ package com.chatin.microbloggingappspringboot.controllers;
 
 import com.chatin.microbloggingappspringboot.models.Blogger;
 import com.chatin.microbloggingappspringboot.models.Post;
+import com.chatin.microbloggingappspringboot.services.BloggerDetailsService;
 import com.chatin.microbloggingappspringboot.services.BloggerService;
 import com.chatin.microbloggingappspringboot.services.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +25,8 @@ public class PostController {
     private final PostService postService;
     private final BloggerService bloggerService;
 
+    private final BloggerDetailsService bloggerDetailsService;
+
     @GetMapping
     public List<Post> home() {
         return postService.getAll();
@@ -39,14 +41,8 @@ public class PostController {
     }
 
     @PostMapping("/new")
-    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Post> createNewPost(@RequestBody Post post, Authentication authentication) {
         String authUsername = authentication.getName();
-        int authUserHash = authentication.getPrincipal().hashCode();
-
-        System.out.println(authUserHash);
-        System.out.println(authUsername);
-
 
         Blogger blogger = bloggerService.findOneByEmail(authUsername).orElseThrow(() ->
                 new IllegalArgumentException("Account not found"));
@@ -57,7 +53,6 @@ public class PostController {
     }
 
     @PostMapping("/{id}")
-    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Post> writePost(@PathVariable Long id, @RequestBody Post post, Authentication authentication) {
 
         String authUsername = authentication.getName();
@@ -81,7 +76,6 @@ public class PostController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Post> updatePost(@PathVariable Long id, @RequestBody Post post, Authentication authentication) {
 
         String authUsername = authentication.getName();
@@ -105,17 +99,22 @@ public class PostController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("isAuthenticated() and hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<Void> deletePost(@PathVariable Long id) {
+    public ResponseEntity<Void> deletePost(@PathVariable Long id, Authentication authentication) {
+        String authUsername = authentication.getName();
+
         Optional<Post> optionalPost = postService.getById(id);
         if (optionalPost.isPresent()) {
-            Post post = optionalPost.get();
-            postService.delete(post);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            Post existingPost = optionalPost.get();
+
+            if (existingPost.getBlogger().getEmail().equals(authUsername) || bloggerDetailsService.isAdmin(authentication)) {
+                postService.delete(existingPost);
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-
 }
 

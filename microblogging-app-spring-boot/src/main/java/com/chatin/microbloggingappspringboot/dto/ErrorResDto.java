@@ -12,5 +12,4 @@ public class ErrorResDto {
         this.httpStatus = httpStatus;
         this.message = message;
     }
-
 }
