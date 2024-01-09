@@ -26,14 +26,15 @@ public class BloggerDetailsService implements UserDetailsService {
                 .orElseThrow(() ->
                         new UsernameNotFoundException("User not found with email: "+ email));
 
-        Set<GrantedAuthority> authorities = blogger
-                .getAuthorities()
-                .stream()
-                .map((authority) -> new SimpleGrantedAuthority(authority.getAuthority()))
-                .collect(Collectors.toSet());
+//        Set<GrantedAuthority> authorities = blogger
+//                .getAuthorities()
+//                .stream()
+//                .map((authority) -> new SimpleGrantedAuthority(authority.getName()))
+//                .collect(Collectors.toSet());
 
-        return new org.springframework.security.core.userdetails.User(blogger.getEmail(),
+        return new org.springframework.security.core.userdetails.User(
+                blogger.getEmail(),
                 blogger.getPassword(),
-                authorities);
+                blogger.getAuthorities());
     }
 }

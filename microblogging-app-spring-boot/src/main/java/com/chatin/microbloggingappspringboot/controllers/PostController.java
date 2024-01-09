@@ -6,7 +6,6 @@ import com.chatin.microbloggingappspringboot.services.BloggerService;
 import com.chatin.microbloggingappspringboot.services.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -43,6 +42,11 @@ public class PostController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Post> createNewPost(@RequestBody Post post, Authentication authentication) {
         String authUsername = authentication.getName();
+        int authUserHash = authentication.getPrincipal().hashCode();
+
+        System.out.println(authUserHash);
+        System.out.println(authUsername);
+
 
         Blogger blogger = bloggerService.findOneByEmail(authUsername).orElseThrow(() ->
                 new IllegalArgumentException("Account not found"));
@@ -53,7 +57,7 @@ public class PostController {
     }
 
     @PostMapping("/{id}")
-    @PreAuthorize("isAuthenticated() and @postSecurity.checkPostOwner(authentication, #id)")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Post> writePost(@PathVariable Long id, @RequestBody Post post, Authentication authentication) {
 
         String authUsername = authentication.getName();
@@ -77,7 +81,7 @@ public class PostController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("isAuthenticated() and @postSecurity.checkPostOwner(authentication, #id)")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Post> updatePost(@PathVariable Long id, @RequestBody Post post, Authentication authentication) {
 
         String authUsername = authentication.getName();
@@ -101,9 +105,7 @@ public class PostController {
     }
 
     @DeleteMapping("/{id}")
-//    @PreAuthorize("isAuthenticated() and @postSecurity.checkPostOwner(authentication, #id)")
-//    @PreAuthorize("isAuthenticated() and hasRole('ROLE_ADMIN')")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("isAuthenticated() and hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<Void> deletePost(@PathVariable Long id) {
         Optional<Post> optionalPost = postService.getById(id);
         if (optionalPost.isPresent()) {

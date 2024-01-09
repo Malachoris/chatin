@@ -41,9 +41,8 @@ public class JwtUtil {
 //                .collect(Collectors.toSet());
 //        claims.put("roles", String.join(",", roleNames));
 
-        claims.put("roles", "ROLE_ADMIN");
-
-//        claims.put("roles", blogger.getAuthorities());
+//        claims.put("roles", "ROLE_ADMIN");
+        claims.put("roles", blogger.getAuthorities());
 
         System.out.println("Claims: " + claims);
 

@@ -133,14 +133,14 @@ public class BloggerService {
                 authorities.remove(authority);
                 existingBlogger.setAuthorities(authorities);
 
-                bloggerRepository.save(existingBlogger);
+                    bloggerRepository.save(existingBlogger);
+                } else {
+                    throw new IllegalStateException("Blogger has no authorities.");
+                }
             } else {
                 throw new IllegalArgumentException("Role not found: " + roleName);
             }
-        } else {
-            throw new IllegalArgumentException("Blogger not found.");
         }
-    }
 
     public Optional<Blogger> findOneByEmail(String email) {
         return bloggerRepository.findOneByEmailIgnoreCase(email);

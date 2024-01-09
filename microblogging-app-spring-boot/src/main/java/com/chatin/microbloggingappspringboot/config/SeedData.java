@@ -64,9 +64,9 @@ public class SeedData implements CommandLineRunner {
             signUpDto1.setEmail("admin.admin@domain.com");
             signUpDto1.setPassword("password");
 
-//            Set<Authority> authorities1 = new HashSet<>();
-//            authorityRepository.findById("ROLE_USER").ifPresent(authorities1::add);
-//            account1.setAuthorities(authorities1);
+            Set<Authority> authorities1 = new HashSet<>();
+            authorityRepository.findById("ROLE_USER").ifPresent(authorities1::add);
+            account1.setAuthorities(authorities1);
 
 
             Set<Authority> authorities2 = new HashSet<>();
@@ -94,9 +94,12 @@ public class SeedData implements CommandLineRunner {
 
             bloggerService.saveSeed(account1);
             bloggerService.saveSeed(account2);
-            bloggerService.addRoleToBlogger(account1, "ROLE_ADMIN");
-            bloggerService.deleteRoleFromBlogger(account1, "ROLE_USER");
-            bloggerService.deleteRoleFromBlogger(account1, "ROLE_ADMIN");
+            System.out.println(account2.getAuthorities());
+            System.out.println(account1.getAuthorities());
+
+//            bloggerService.addRoleToBlogger(account1, "ROLE_ADMIN");
+//            bloggerService.deleteRoleFromBlogger(account1, "ROLE_USER");
+//            bloggerService.deleteRoleFromBlogger(account1, "ROLE_ADMIN");
 
 //            bloggerService.saveUpdate(signUpDto);
 //            bloggerService.saveUpdate(signUpDto1);
