@@ -53,7 +53,31 @@ public class PostController {
     }
 
     @PostMapping("/{id}")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated() and @postSecurity.checkPostOwner(authentication, #id)")
+    public ResponseEntity<Post> writePost(@PathVariable Long id, @RequestBody Post post, Authentication authentication) {
+
+        String authUsername = authentication.getName();
+
+        Optional<Post> optionalPost = postService.getById(id);
+        if (optionalPost.isPresent()) {
+            Post existingPost = optionalPost.get();
+
+            if (!existingPost.getBlogger().getEmail().equals(authUsername)) {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
+
+            existingPost.setTitle(post.getTitle());
+            existingPost.setBody(post.getBody());
+
+            postService.save(existingPost);
+            return new ResponseEntity<>(existingPost, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("isAuthenticated() and @postSecurity.checkPostOwner(authentication, #id)")
     public ResponseEntity<Post> updatePost(@PathVariable Long id, @RequestBody Post post, Authentication authentication) {
 
         String authUsername = authentication.getName();
@@ -77,7 +101,9 @@ public class PostController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("isAuthenticated() and @postSecurity.checkPostOwner(authentication, #id)")
+//    @PreAuthorize("isAuthenticated() and @postSecurity.checkPostOwner(authentication, #id)")
+//    @PreAuthorize("isAuthenticated() and hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Void> deletePost(@PathVariable Long id) {
         Optional<Post> optionalPost = postService.getById(id);
         if (optionalPost.isPresent()) {
@@ -88,27 +114,6 @@ public class PostController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-
-//    @GetMapping("/{id}/edit")
-//    @PreAuthorize("isAuthenticated()")
-//    public ResponseEntity<Post> getPostForEdit(@PathVariable Long id, Authentication authentication) {
-//        // Example of getting the authenticated user's name from Authentication object
-//        String authUsername = authentication.getName();
-//
-//        Optional<Post> optionalPost = postService.getById(id);
-//        if (optionalPost.isPresent()) {
-//            Post post = optionalPost.get();
-//
-//            // Ensure that only the owner of the post can access it for editing
-//            if (!post.getBlogger().getEmail().equals(authUsername)) {
-//                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-//            }
-//
-//            return new ResponseEntity<>(post, HttpStatus.OK);
-//        } else {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-//    }
 
 }
 

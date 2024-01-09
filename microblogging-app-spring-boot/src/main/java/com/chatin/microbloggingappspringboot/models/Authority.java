@@ -5,13 +5,14 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import jakarta.persistence.*;
 import lombok.ToString;
+import org.springframework.security.core.GrantedAuthority;
 
 @Entity
 @Setter
 @Getter
 @NoArgsConstructor
 @ToString
-public class Authority {
+public class Authority implements GrantedAuthority {
 
     @Id
     @Column(length = 16)
@@ -35,6 +36,11 @@ public class Authority {
     @Override
     public int hashCode() {
         return name.hashCode();
+    }
+
+    @Override
+    public String getAuthority() {
+        return this.name;
     }
 
 }

@@ -1,5 +1,6 @@
 package com.chatin.microbloggingappspringboot.security;
 
+import com.chatin.microbloggingappspringboot.models.Authority;
 import com.chatin.microbloggingappspringboot.models.Blogger;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -10,7 +11,9 @@ import org.springframework.stereotype.Component;
 import java.security.Key;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtUtil {
@@ -33,12 +36,21 @@ public class JwtUtil {
         Claims claims = Jwts.claims().setSubject(blogger.getEmail());
         claims.put("firstName",blogger.getFirstName());
         claims.put("username",blogger.getUsername());
-        claims.put("roles", blogger.getAuthorities());
+//        Set<String> roleNames = blogger.getAuthorities().stream()
+//                .map(Authority::getName)
+//                .collect(Collectors.toSet());
+//        claims.put("roles", String.join(",", roleNames));
+
+        claims.put("roles", "ROLE_ADMIN");
+
+//        claims.put("roles", blogger.getAuthorities());
+
+        System.out.println("Claims: " + claims);
+
         Date tokenCreateTime = new Date();
         Date tokenValidity = new Date(tokenCreateTime.getTime() + TimeUnit.MINUTES.toMillis(accessTokenValidity));
         return Jwts.builder()
                 .setClaims(claims)
-
                 .setExpiration(tokenValidity)
                 .signWith(secret_key)
                 .compact();

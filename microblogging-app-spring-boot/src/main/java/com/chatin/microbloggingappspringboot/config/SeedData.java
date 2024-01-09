@@ -43,13 +43,14 @@ public class SeedData implements CommandLineRunner {
             authorityRepository.save(admin);
 
 
-//            Blogger account1 = Blogger
-//                    .builder()
-//                    .firstName("user_first")
-//                    .username("user_last")
-//                    .email("user.user@domain.com")
-//                    .password("password")
-//                    .build();
+            Blogger account1 = Blogger
+                    .builder()
+                    .firstName("user_first")
+                    .username("user_last")
+                    .email("user.user@domain.com")
+                    .password("password")
+                    .build();
+
 
             SignUpDto signUpDto = new SignUpDto();
             signUpDto.setFirstName("user_first");
@@ -67,23 +68,39 @@ public class SeedData implements CommandLineRunner {
 //            authorityRepository.findById("ROLE_USER").ifPresent(authorities1::add);
 //            account1.setAuthorities(authorities1);
 
-//            Blogger account2 = Blogger
-//                    .builder()
-//                    .firstName("admin_first")
-//                    .username("admin_last")
-//                    .email("admin.admin@domain.com")
-//                    .password("password")
-//                    .build();
-
-            Blogger account1;
-            Blogger account2;
-            account1 = bloggerService.save(signUpDto);
-            account2 = bloggerService.save(signUpDto1);
 
             Set<Authority> authorities2 = new HashSet<>();
             authorityRepository.findById("ROLE_ADMIN").ifPresent(authorities2::add);
             //authorityRepository.findById("ROLE_USER").ifPresent(authorities2::add);
+
+
+            Blogger account2 = Blogger
+                    .builder()
+                    .firstName("admin_first")
+                    .username("admin_last")
+                    .email("admin.admin@domain.com")
+                    .password("password")
+                    .authorities(authorities2)
+                    .build();
+
+
+
             account2.setAuthorities(authorities2);
+
+//            Blogger account1;
+//            Blogger account2;
+//            account1 = bloggerService.save(signUpDto);
+//            account2 = bloggerService.save(signUpDto1);
+
+            bloggerService.saveSeed(account1);
+            bloggerService.saveSeed(account2);
+            bloggerService.addRoleToBlogger(account1, "ROLE_ADMIN");
+            bloggerService.deleteRoleFromBlogger(account1, "ROLE_USER");
+            bloggerService.deleteRoleFromBlogger(account1, "ROLE_ADMIN");
+
+//            bloggerService.saveUpdate(signUpDto);
+//            bloggerService.saveUpdate(signUpDto1);
+
 
             Post post1 = Post
                     .builder()

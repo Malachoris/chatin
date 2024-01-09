@@ -32,49 +32,46 @@ public class AdminController {
     @Autowired
     private final PasswordEncoder passwordEncoder;
 
-    @PostMapping("/createUser")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<?> createUser(@RequestBody SignUpDto signUpDto, @RequestParam String role) {
-        if (!isValidRole(role)) {
-            return new ResponseEntity<>("Invalid role provided", HttpStatus.BAD_REQUEST);
-        }
-
-        Optional<Blogger> existingUser =bloggerRepository.findByUsernameOrEmail(signUpDto.getUsername(),
-                signUpDto.getEmail());
-        if (existingUser.isPresent()) {
-            if (existingUser.get().getEmail().equals(signUpDto.getEmail())) {
-                return new ResponseEntity<>("Email already exists!", HttpStatus.BAD_REQUEST);
-            } else {
-                return new ResponseEntity<>("Username already exist!", HttpStatus.BAD_REQUEST);
-            }
-        }
-//    public ResponseEntity<?> assignRole(){}
-        // Create user object
-        Blogger blogger = Blogger
-                .builder()
-                .firstName(signUpDto.getFirstName())
-                .username(signUpDto.getUsername()) // You might need to adjust this based on your requirements
-                .email(signUpDto.getEmail())
-                .password(passwordEncoder.encode(signUpDto.getPassword()))
-                .build();
-
-        // Assign role
-        Authority authority = authorityRepository.findByName(role).orElse(null);
-        if (authority == null) {
-            return new ResponseEntity<>("Role not found", HttpStatus.BAD_REQUEST);
-        }
-        blogger.setAuthorities(Collections.singleton(authority));
-
-        bloggerService.save(signUpDto);
-
-        return new ResponseEntity<>("User created successfully!", HttpStatus.OK);
-    }
+//    @PostMapping("/createUser")
+//    @PreAuthorize("hasRole('ROLE_ADMIN')")
+//    public ResponseEntity<?> createUser(@RequestBody SignUpDto signUpDto, @RequestParam String role) {
+//        if (!isValidRole(role)) {
+//            return new ResponseEntity<>("Invalid role provided", HttpStatus.BAD_REQUEST);
+//        }
+//
+//        Optional<Blogger> existingUser =bloggerService.findOneByEmail(signUpDto.getEmail());
+//        if (existingUser.isPresent()) {
+//            if (existingUser.get().getEmail().equals(signUpDto.getEmail())) {
+//                return new ResponseEntity<>("Email already exists!", HttpStatus.BAD_REQUEST);
+//            }
+//        }
+////    public ResponseEntity<?> assignRole(){}
+//        // Create user object
+//        Blogger blogger = Blogger
+//                .builder()
+//                .firstName(signUpDto.getFirstName())
+//                .username(signUpDto.getUsername()) // You might need to adjust this based on your requirements
+//                .email(signUpDto.getEmail())
+//                .password(passwordEncoder.encode(signUpDto.getPassword()))
+//                .build();
+//
+//        // Assign role
+//        Authority authority = authorityRepository.findByName(role).orElse(null);
+//        if (authority == null) {
+//            return new ResponseEntity<>("Role not found", HttpStatus.BAD_REQUEST);
+//        }
+//        blogger.setAuthorities(Collections.singleton(authority));
+//
+//        bloggerService.save(signUpDto);
+//
+//        return new ResponseEntity<>("User created successfully!", HttpStatus.OK);
+//    }
 
     @DeleteMapping("/deleteUser/{username}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> deleteUser(@PathVariable Blogger blogger) {
 
-        Optional<Blogger> userToDelete =bloggerRepository.findByUsernameOrEmail(blogger.getUsername(),blogger.getEmail());
+        Optional<Blogger> userToDelete =bloggerService.findOneByEmail(blogger.getEmail());
         if (userToDelete.isEmpty()) {
             return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
         }

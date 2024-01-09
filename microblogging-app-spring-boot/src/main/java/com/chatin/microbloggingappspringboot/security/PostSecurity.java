@@ -29,10 +29,11 @@ public class PostSecurity {
             Post post = optionalPost.get();
             Blogger postOwner = post.getBlogger();
 
-            // Check if the authenticated user is the owner of the post
             return postOwner.getEmail().equals(authUsername);
         }
 
         return false;
     }
+
+
 }
